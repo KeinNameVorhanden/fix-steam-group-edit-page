@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Fix Steam Group Edit
-// @namespace    http://tampermonkey.net/
+// @namespace    FixSteamGroupEdit
 // @version      1.0
 // @description  Fixes the bugged edit website of steam groups.
 // @author       TrolluXe
