@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fix Steam Group Edit
 // @namespace    FixSteamGroupEdit
-// @version      1.0
+// @version      1.1
 // @description  Fixes the bugged edit website of steam groups.
 // @author       TrolluXe
 // @match        https://steamcommunity.com/groups/*/edit
@@ -10,8 +10,45 @@
 // @grant        none
 // ==/UserScript==
 
+function putbuttonstyle() {
+    var head, style
+    head = document.getElementsByTagName('head')[0]
+    if (!head) { return }
+    style = document.createElement('style')
+    style.type = 'text/css'
+    style.innerHTML = `.btn_default_style > span {
+    border-radius: 2px;
+    display: block;
+    }
+    .btn_approvalgreen_white_innerfade > span {
+    background: #059984;
+    background: -webkit-linear-gradient( top, #059984 5%, #04693a 95%);
+    background: linear-gradient( to bottom, #059984 5%, #04693a 95%);
+    }
+    .btn_approvalgreen_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span {
+    background: #07bfae;
+    background: -webkit-linear-gradient( top, #07bfae 5%, #06a06d 95%);
+    background: linear-gradient( to bottom, #07bfae 5%, #06a06d 95%);
+    }
+    .btn_red_white_innerfade > span {
+    background: #990505;
+    background: -webkit-linear-gradient( top, #990505 5%, #690404 95%);
+    background: linear-gradient( to bottom, #990505 5%, #690404 95%);
+    }
+    .btn_red_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span {
+    background: #bf0707;
+    background: -webkit-linear-gradient( top, #bf0707 5%, #a00606  95%);
+    background: linear-gradient( to bottom, #bf0707 5%, #a00606 95%);
+    }
+    .forum_manage_actions .btn_medium {
+    margin-left: 0;
+    }`
+    head.appendChild(style)
+}
+
 (function() {
     'use strict';
+    putbuttonstyle()
     let start = document.getElementsByClassName("group_content group_summary")[0]
 
     for(var i = 1; i <= 3; i++) {
@@ -79,4 +116,27 @@
         start.appendChild(a99)
     }
 
+    let og_button = document.getElementsByClassName("btn_green_white_innerfade btn_medium")[0]
+    og_button.className = "btn_default_style btn_approvalgreen_white_innerfade btn_medium"
+
+    let parent = document.getElementsByClassName("group_admin_header")[0]
+    let sibling = document.getElementsByClassName("admin_avatar_dropshadow")[0]
+
+    let save_button_div = document.createElement("div")
+    save_button_div.className = "forum_manage_actions"
+    save_button_div.style.top = "2.3em"
+    save_button_div.style.position = "relative"
+
+    let save_button_a = document.createElement("a")
+    //save_button_a.className = "btn_grey_white_innerfade btn_medium" // grey button
+    //save_button_a.className = "btn_default_style btn_red_white_innerfade btn_medium" // red button
+    save_button_a.className = "btn_default_style btn_approvalgreen_white_innerfade btn_medium" // approval green button
+    save_button_a.href = "javascript:validateFields();"
+
+    let save_button_span = document.createElement("span")
+    save_button_span.innerHTML = "Save Changes"
+
+    save_button_a.appendChild(save_button_span)
+    save_button_div.appendChild(save_button_a)
+    parent.insertBefore(save_button_div, sibling)
 })();
