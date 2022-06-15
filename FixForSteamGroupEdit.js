@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fix Steam Group Edit
 // @namespace    FixSteamGroupEdit
-// @version      1.1
+// @version      1.2
 // @description  Fixes the bugged edit website of steam groups.
 // @author       TrolluXe
 // @match        https://steamcommunity.com/groups/*/edit
@@ -10,46 +10,33 @@
 // @grant        none
 // ==/UserScript==
 
-function putbuttonstyle() {
+function putButtonStyle() {
     var head, style
     head = document.getElementsByTagName('head')[0]
     if (!head) { return }
     style = document.createElement('style')
     style.type = 'text/css'
-    style.innerHTML = `.btn_default_style > span {
-    border-radius: 2px;
-    display: block;
+    style.innerHTML = `
+    :root {
+    --FSGE_aquamarine: #059984;
+    --FSGE_green: #06a06d;
+    --FSGE_lightgreen: #07BFAE;
+    --FSGE_darkgreen: #04693A;
+    --FSGE_lightred: #BF0707;
+    --FSGE_darkred: #990505;
+    --FSGE_darkerred: #690404;
     }
-    .btn_approvalgreen_white_innerfade > span {
-    background: #059984;
-    background: -webkit-linear-gradient( top, #059984 5%, #04693a 95%);
-    background: linear-gradient( to bottom, #059984 5%, #04693a 95%);
-    }
-    .btn_approvalgreen_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span {
-    background: #07bfae;
-    background: -webkit-linear-gradient( top, #07bfae 5%, #06a06d 95%);
-    background: linear-gradient( to bottom, #07bfae 5%, #06a06d 95%);
-    }
-    .btn_red_white_innerfade > span {
-    background: #990505;
-    background: -webkit-linear-gradient( top, #990505 5%, #690404 95%);
-    background: linear-gradient( to bottom, #990505 5%, #690404 95%);
-    }
-    .btn_red_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span {
-    background: #bf0707;
-    background: -webkit-linear-gradient( top, #bf0707 5%, #a00606  95%);
-    background: linear-gradient( to bottom, #bf0707 5%, #a00606 95%);
-    }
-    .forum_manage_actions .btn_medium {
-    margin-left: 0;
-    }`
+    .btn_default_style > span { border-radius: 2px; display: block; }
+    .btn_approvalgreen_white_innerfade > span { background:var(--FSGE_aquamarine); background: -webkit-linear-gradient( top,var(--FSGE_aquamarine) 5%,var(--FSGE_darkgreen) 95%); background: linear-gradient( to bottom,var(--FSGE_aquamarine) 5%,var(--FSGE_darkgreen) 95%); }
+    .btn_approvalgreen_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span { background:var(--FSGE_lightgreen); background: -webkit-linear-gradient( top,var(--FSGE_lightgreen) 5%, var(--FSGE_green) 95%); background: linear-gradient( to bottom,var(--FSGE_lightgreen) 5%, var(--FSGE_green) 95%); }
+    .btn_red_white_innerfade > span { background:var(--FSGE_darkred); background: -webkit-linear-gradient( top,var(--FSGE_darkred) 5%,var(--FSGE_darkerred) 95%); background: linear-gradient( to bottom,var(--FSGE_darkred) 5%,var(--FSGE_darkerred) 95%); }
+    .btn_red_white_innerfade:not(.btn_disabled):not(:disabled):not(.btn_active):not(.active):hover > span { background:var(--FSGE_lightred); background: -webkit-linear-gradient( top,var(--FSGE_lightred) 5%, #a00606  95%); background: linear-gradient( to bottom,var(--FSGE_lightred) 5%, #a00606 95%); }
+    .forum_manage_actions .btn_medium { margin-left: 0; }`
     head.appendChild(style)
 }
 
-(function() {
-    'use strict';
-    putbuttonstyle()
-    let start = document.getElementsByClassName("group_content group_summary")[0]
+function addUrlFields() {
+    let group_content = document.getElementsByClassName("group_content group_summary")[0]
 
     for(var i = 1; i <= 3; i++) {
         let title_i = 'weblink_' + i + '_title'
@@ -57,65 +44,68 @@ function putbuttonstyle() {
 
         if(i > 1) {
             let x00 = document.createElement("br")
-            start.appendChild(x00)
+            group_content.appendChild(x00)
         }
 
-        let a00 = document.createElement("div")
-        a00.className = "formRow"
-        a00.margin = "0 0 20px 0 !important"
+        let title_row = document.createElement("div")
+        title_row.className = "formRow"
+        title_row.margin = "0 0 20px 0 !important"
 
-        let b00 = document.createElement("div")
-        b00.className = "formRowFields"
+        let title_parent = document.createElement("div")
+        title_parent.className = "formRowFields"
 
-        let g01 = document.createElement("div")
-        g01.className = "formRowTitle"
-        g01.textContent = "Website Title"
+        let title_label = document.createElement("div")
+        title_label.className = "formRowTitle"
+        title_label.textContent = "Website Title"
 
-        let c00 = document.createElement("div")
-        c00.className = "gray_bevel for_text_input fullwidth"
+        let title_input_parent = document.createElement("div")
+        title_input_parent.className = "gray_bevel for_text_input fullwidth"
 
-        let c01 = document.createElement("div")
-        c01.className = "gray_bevel for_text_input fullwidth"
+        let title_input = document.createElement("input")
+        title_input.className = "dynInput"
+        title_input.type = "text"
+        title_input.name = "[" + i + "] Title"
+        title_input.id = title_i
 
-        let inject_title = document.createElement("input")
-        inject_title.className = "dynInput"
-        inject_title.type = "text"
-        inject_title.name = "[" + i + "] Title"
-        inject_title.id = title_i
+        title_input_parent.appendChild(title_input)
+        title_parent.appendChild(title_input_parent)
+        title_row.appendChild(title_parent)
+        title_row.appendChild(title_label)
+        group_content.appendChild(title_row)
 
-        c00.appendChild(inject_title)
-        b00.appendChild(c00)
-        a00.appendChild(b00)
-        a00.appendChild(g01)
-        start.appendChild(a00)
+        //CC GG FF CC GG FF CC GG FF CC GG FF CC GG FF
+        // CC GG FF CC GG FF CC GG FF CC GG FF CC GG FF
+        //CC GG FF CC GG FF CC GG FF CC GG FF CC GG FF
 
-        let a99 = document.createElement("div")
-        a99.className = "formRow"
-        a99.margin = "0 0 20px 0 !important"
+        let url_row = document.createElement("div")
+        url_row.className = "formRow"
+        url_row.margin = "0 0 20px 0 !important"
 
-        let b99 = document.createElement("div")
-        b99.className = "formRowFields"
+        let url_parent = document.createElement("div")
+        url_parent.className = "formRowFields"
 
-        let g99 = document.createElement("div")
-        g99.className = "formRowTitle"
-        g99.textContent = "Website Link"
+        let url_label = document.createElement("div")
+        url_label.className = "formRowTitle"
+        url_label.textContent = "Website Link"
 
-        let c99 = document.createElement("div")
-        c99.className = "gray_bevel for_text_input fullwidth"
+        let url_input_parent = document.createElement("div")
+        url_input_parent.className = "gray_bevel for_text_input fullwidth"
 
-        let inject_url = document.createElement("input")
-        inject_url.className = "dynInput"
-        inject_url.type = "text"
-        inject_url.name = "[" + i + "] Url"
-        inject_url.id = url_i
+        let url_input = document.createElement("input")
+        url_input.className = "dynInput"
+        url_input.type = "text"
+        url_input.name = "[" + i + "] Url"
+        url_input.id = url_i
 
-        c99.appendChild(inject_url)
-        b99.appendChild(c99)
-        a99.appendChild(b99)
-        a99.appendChild(g99)
-        start.appendChild(a99)
+        url_input_parent.appendChild(url_input)
+        url_parent.appendChild(url_input_parent)
+        url_row.appendChild(url_parent)
+        url_row.appendChild(url_label)
+        group_content.appendChild(url_row)
     }
+}
 
+function addSaveButton() {
     let og_button = document.getElementsByClassName("btn_green_white_innerfade btn_medium")[0]
     og_button.className = "btn_default_style btn_approvalgreen_white_innerfade btn_medium"
 
@@ -139,4 +129,23 @@ function putbuttonstyle() {
     save_button_a.appendChild(save_button_span)
     save_button_div.appendChild(save_button_a)
     parent.insertBefore(save_button_div, sibling)
+}
+
+function addGroupID64(id) {
+    let ID_row = document.getElementsByClassName("formRowFields")[0]
+    let tmp = ID_row.textContent + " | ID64: " + id
+    ID_row.textContent = tmp
+}
+
+(function() {
+    'use strict';
+    let group_name = document.getElementsByClassName("groupadmin_header_name")[0].textContent
+    let group_id = g_strBaseEditURL.replace("https://steamcommunity.com/actions/EditProcess?gId=", "")
+    let log_string = ("Editing " + group_name + " (" + group_id + ")").replace("  ", " ").replace("( ", "(").replace(") ", ")")
+    console.log(log_string)
+
+    putButtonStyle()
+    addUrlFields()
+    addSaveButton()
+    addGroupID64(group_id)
 })();
